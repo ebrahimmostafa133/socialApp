@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
+import { Post } from '../model/post.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { environment } from '../../../../../environments/environment';
 export class PostService {
 
   private readonly httpClient = inject(HttpClient);
+  allPosts: WritableSignal<Post[]> = signal([]);
 
   createPost(data: object): Observable<any> {
     return this.httpClient.post(environment.baseUrl + `posts`, data);
@@ -18,8 +20,8 @@ export class PostService {
     return this.httpClient.get(environment.baseUrl + `posts`);
   }
 
-  getPostsWithLimit(limit: number = 50, page: number = 1): Observable<any> {
-    return this.httpClient.get(environment.baseUrl + `posts?limit=${limit}`);
+  getPostsWithLimit(limit: number = 50, page: number = 1, sort: string = '-createdAt'): Observable<any> {
+    return this.httpClient.get(environment.baseUrl + `posts?limit=${limit}&page=${page}&sort=${sort}`);
   }
 
   getUserPosts(userId: string, limit: number = 2): Observable<any> {

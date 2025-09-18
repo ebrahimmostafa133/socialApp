@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class CreatePostComponent implements OnInit {
 
   private readonly postService = inject(PostService);
+  allposts = this.postService.allPosts;
   
   saveFile: WritableSignal<File | null> = signal(null);
   previewUrl: WritableSignal<string | null> = signal(null);  
@@ -62,7 +63,12 @@ export class CreatePostComponent implements OnInit {
             this.previewUrl.set(null);
             new Modal(this.myModel()?.nativeElement).hide();
 
-            // Get all posts after creating a new one
+            //reload posts
+            this.postService.getPostsWithLimit(10, 1).subscribe({
+              next: (response) => {
+                this.allposts.set(response.posts);
+              }
+            });
           }
         },
         error: (error) => {
@@ -71,4 +77,6 @@ export class CreatePostComponent implements OnInit {
       });
     }
   }
+
+  
 }

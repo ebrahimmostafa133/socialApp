@@ -1,113 +1,118 @@
-<!-- Post Container -->
-<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 mb-6" *ngIf="post">
-  
-  <!-- Post Header -->
-  <div class="p-4 flex items-start justify-between">
-    <div class="flex items-center space-x-3">
-      <!-- Profile Picture -->
-      <div class="relative">
-        <img [src]="post().user.photo"
-             [alt]="post().user.name"
-             class="w-10 h-10 rounded-full object-cover">
+<!-- Post Container - Only render if post exists -->
+@if (post(); as currentPost) {
+  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+    
+    <!-- Post Header -->
+    <div class="p-4 flex items-start justify-between">
+      <div class="flex items-center space-x-3">
+        <!-- Profile Picture -->
+        <div class="relative">
+          <img [src]="currentPost.user.photo || '/images/default-profile.png'"
+               [alt]="currentPost.user.name || 'User'"
+               class="w-10 h-10 rounded-full object-cover">
+        </div>
+        
+        <!-- User Info -->
+        <div>
+          <h3 class="font-semibold text-gray-900 text-sm">{{ currentPost.user.name || 'Unknown User' }}</h3>
+          <p class="text-xs text-gray-500">{{ currentPost.createdAt | date:'short' }}</p>
+        </div>
       </div>
       
-      <!-- User Info -->
-      <div>
-        <h3 class="font-semibold text-gray-900 text-sm">{{ post().user.name }}</h3>
-        <p class="text-xs text-gray-500">{{ post().createdAt | date:'short' }}</p>
+      <!-- More Options Dropdown -->
+      <div class="relative inline-block text-left">
+        <!-- Trigger button -->
+        <button
+          (click)="toggleDropdown(currentPost.id)"
+          class="text-gray-400 hover:text-gray-600 p-1 transition-colors duration-200"
+          type="button"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+          </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        @if (openDropdownId() === currentPost.id) {
+          <div class="absolute right-0 mt-2 w-40 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+              @if (mode() === 'hide') {
+                <li>
+                  <button (click)="onHide(currentPost)"
+                    class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    Hide
+                  </button>
+                </li>
+              }
+
+              @if (mode() === 'full') {
+                <li>
+                  <button (click)="onUpdate(currentPost)"
+                    class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    ✏️ Update
+                  </button>
+                </li>
+                <li>
+                  <button (click)="onDelete(currentPost)"
+                    class="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-400">
+                    🗑 Delete
+                  </button>
+                </li>
+              }
+
+              @if (mode() === 'delete-only') {
+                <li>
+                  <button (click)="onDelete(currentPost)"
+                    class="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-400">
+                    🗑 Delete
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
       </div>
     </div>
     
-    <!-- More Options Dropdown -->
-    <div class="relative inline-block text-left">
-      <!-- Trigger button -->
-      <button
-        (click)="toggleDropdown(post().id)"
-        class="text-gray-400 hover:text-gray-600 p-1 transition-colors duration-200"
-        type="button"
-      >
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-        </svg>
+    <!-- Post Content -->
+    <div class="px-4 pb-3">
+      <p class="text-sm text-gray-800 leading-relaxed">
+        {{ currentPost.body }}
+      </p>
+      <!-- Post Image -->
+      @if (currentPost.image) {
+        <div class="mt-3">
+          <img [src]="currentPost.image"
+               alt="Post image"
+               class="w-full max-h-96 object-cover rounded-lg border border-gray-200">
+        </div>
+      }
+    </div>
+    
+    <!-- Post Footer -->
+    <div class="p-4 space-y-3">
+      <!-- Toggle Button -->
+      <button 
+        #btn
+        (click)="toggleComments()" 
+        class="text-blue-600 text-xs hover:underline transition-colors duration-200">
+        {{ showComments() ? 'Hide Comments' : 'Show Comments' }} ({{ comments().length }})
       </button>
 
-      <!-- Dropdown menu -->
-      <div
-        *ngIf="openDropdownId === post().id"
-        class="absolute right-0 mt-2 w-40 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700"
-      >
-        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-          <li *ngIf="mode() === 'hide'">
-            <button (click)="onHide(post())"
-              class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-              Hide
-            </button>
-          </li>
+      <!-- Divider -->
+      @if (showComments()) {
+        <div class="border-t border-gray-100 mt-2"></div>
+      }
 
-          <ng-container *ngIf="mode() === 'full'">
-            <li>
-              <button (click)="onUpdate(post())"
-                class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                ✏️ Update
-              </button>
-            </li>
-            <li>
-              <button (click)="onDelete(post())"
-                class="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-400">
-                🗑 Delete
-              </button>
-            </li>
-          </ng-container>
-
-          <li *ngIf="mode() === 'delete-only'">
-            <button (click)="onDelete(post())"
-              class="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-400">
-              🗑 Delete
-            </button>
-          </li>
-        </ul>
-      </div>
+      @defer (on interaction(btn)) {
+        <!-- Comment Section -->
+        @if (showComments()) {
+          <app-s-comment 
+            [commentsSignal]="commentsWritable"
+            [postId]="currentPost._id">
+          </app-s-comment>
+        }
+      }
     </div>
   </div>
-  
-  <!-- Post Content -->
-  <div class="px-4 pb-3">
-    <p class="text-sm text-gray-800 leading-relaxed">
-      {{ post().body }}
-    </p>
-    <!-- Post Image -->
-  @if (post().image) {
-    <div  class="mt-3">
-    <img [src]="post().image"
-         alt="Post image"
-         class="w-full max-h-96 object-cover rounded-lg border border-gray-200">
-  </div>
-  }
-  </div>
-  
-  <!-- Post Footer -->
-<div class="p-4 space-y-3">
-
-  <!-- Toggle Button -->
-  <button 
-  #btn
-    (click)="toggleComments()" 
-    class="text-blue-600 text-xs hover:underline transition-colors duration-200">
-    {{ showComments ? 'Hide Comments' : 'Show Comments' }} ({{ post().comments.length }})
-  </button>
-
-  <!-- Divider -->
-  <div *ngIf="showComments" class="border-t border-gray-100 mt-2"></div>
-
-  @defer (on interaction(btn)) {
-    <!-- Comment Section (reusing SCommentComponent) -->
-  <app-s-comment 
-    
-    *ngIf="showComments" 
-    [postId]="post()._id">
-  </app-s-comment>
-  }
-
-</div>
-
-</div>
+}

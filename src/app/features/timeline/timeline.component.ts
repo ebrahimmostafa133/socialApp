@@ -15,7 +15,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 export class TimelineComponent implements OnInit {
 
   private readonly postService = inject(PostService);
-  allPosts: WritableSignal<Post[]> = signal([]);
+  allPosts = this.postService.allPosts;
 
   // pagination
   limit: number = 20;   
