@@ -1,0 +1,18 @@
+<app-create-post></app-create-post>
+
+<!-- posts -->
+<div 
+  class="timeline-container"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="300"
+  (scrolled)="onScroll()"
+>
+@for (post of allPosts(); track post.id) {
+      <app-s-post
+        [post]="post"
+        [mode]="'hide'"
+      ></app-s-post>
+}
+
+</div>

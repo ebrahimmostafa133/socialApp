@@ -1,0 +1,246 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col justify-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="flex justify-center">
+      <div class="bg-blue-600 p-3 rounded-full shadow-lg">
+        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+    </div>
+    <h2 class="mt-4 text-center text-3xl font-bold text-gray-900">
+      Linked<span class="text-blue-600">Posts</span>
+    </h2>
+    <h3 class="mt-2 text-center text-xl font-semibold text-gray-700">
+      Create your account
+    </h3>
+    <p class="mt-1 text-center text-sm text-gray-600 max-w">
+      Join our community and start sharing
+    </p>
+  </div>
+
+  <!-- Form Container -->
+  <div class="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-6 sm:py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
+      
+      <form [formGroup]="registerForm" (ngSubmit)="submitForm()" class="space-y-5 sm:space-y-6">
+        
+        <!-- Name Field -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Your full name"
+              class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200"
+              [class.border-red-500]="getControl('name').invalid && getControl('name').touched"
+              [class.border-green-500]="getControl('name').valid && getControl('name').touched">
+          </div>
+          <div *ngIf="getControl('name').invalid && getControl('name').touched" class="mt-1">
+            <small *ngIf="getControl('name').errors?.['required']" class="text-red-600 text-xs">Name is required</small>
+            <small *ngIf="getControl('name').errors?.['minlength']" class="text-red-600 text-xs">Name must be at least 3 characters</small>
+            <small *ngIf="getControl('name').errors?.['maxlength']" class="text-red-600 text-xs">Name must not exceed 20 characters</small>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="you@example.com"
+              class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200"
+              [class.border-red-500]="getControl('email').invalid && getControl('email').touched"
+              [class.border-green-500]="getControl('email').valid && getControl('email').touched">
+          </div>
+          <div *ngIf="getControl('email').invalid && getControl('email').touched" class="mt-1">
+            <small *ngIf="getControl('email').errors?.['required']" class="text-red-600 text-xs">Email is required</small>
+            <small *ngIf="getControl('email').errors?.['email']" class="text-red-600 text-xs">Enter a valid email</small>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <input 
+              type="password" 
+              formControlName="password" 
+              placeholder="••••••••"
+              class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200"
+              [class.border-red-500]="getControl('password').invalid && getControl('password').touched"
+              [class.border-green-500]="getControl('password').valid && getControl('password').touched">
+          </div>
+          <div *ngIf="getControl('password').invalid && getControl('password').touched" class="mt-1">
+            <small *ngIf="getControl('password').errors?.['required']" class="text-red-600 text-xs">Password is required</small>
+            <small *ngIf="getControl('password').errors?.['minlength']" class="text-red-600 text-xs">Password must be at least 6 characters</small>
+            <small *ngIf="getControl('password').errors?.['maxlength']" class="text-red-600 text-xs">Password must not exceed 20 characters</small>
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <input 
+              type="password" 
+              formControlName="rePassword" 
+              placeholder="••••••••"
+              class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200"
+              [class.border-red-500]="(getControl('rePassword').invalid && getControl('rePassword').touched) || (registerForm.errors?.['noMatch'] && getControl('rePassword').touched)"
+              [class.border-green-500]="getControl('rePassword').valid && getControl('rePassword').touched && !registerForm.errors?.['noMatch']">
+          </div>
+          <div *ngIf="getControl('rePassword').invalid && getControl('rePassword').touched" class="mt-1">
+            <small *ngIf="getControl('rePassword').errors?.['required']" class="text-red-600 text-xs">Password confirmation is required</small>
+          </div>
+          
+          <div *ngIf="registerForm.errors?.['noMatch'] && getControl('rePassword').touched" class="mt-1">
+            <small class="text-red-600 text-xs">Passwords do not match</small>
+          </div>
+        </div>
+
+        <!-- Date of Birth -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <input 
+              type="date" 
+              formControlName="dateOfBirth"
+              class="appearance-none block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200"
+              [class.border-red-500]="getControl('dateOfBirth').invalid && getControl('dateOfBirth').touched"
+              [class.border-green-500]="getControl('dateOfBirth').valid && getControl('dateOfBirth').touched">
+          </div>
+          
+          <div *ngIf="getControl('dateOfBirth').invalid && getControl('dateOfBirth').touched" class="mt-1">
+            <small *ngIf="getControl('dateOfBirth').errors?.['required']" class="text-red-600 text-xs">Date of birth is required</small>
+          </div>
+        </div>
+
+        <!-- Gender Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Male Option -->
+            <label class="flex flex-col items-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 hover:shadow-sm"
+                  [class.border-blue-500]="getControl('gender').value === 'male'"
+                  [class.bg-blue-50]="getControl('gender').value === 'male'"
+                  [class.shadow-sm]="getControl('gender').value === 'male'">
+              <input 
+                type="radio" 
+                formControlName="gender" 
+                value="male"
+                class="sr-only">
+              <!-- Male Icon -->
+              <svg class="h-6 w-6 mb-2 transition-colors duration-200" 
+                  [class.text-blue-500]="getControl('gender').value === 'male'"
+                  [class.text-gray-500]="getControl('gender').value !== 'male'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span class="text-sm font-medium transition-colors duration-200"
+                    [class.text-blue-600]="getControl('gender').value === 'male'"
+                    [class.text-gray-700]="getControl('gender').value !== 'male'">
+                Male
+              </span>
+            </label>
+
+            <!-- Female Option -->
+            <label class="flex flex-col items-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-all duration-200 hover:border-pink-400 hover:shadow-sm"
+                  [class.border-pink-500]="getControl('gender').value === 'female'"
+                  [class.bg-pink-50]="getControl('gender').value === 'female'"
+                  [class.shadow-sm]="getControl('gender').value === 'female'">
+              <input 
+                type="radio" 
+                formControlName="gender" 
+                value="female"
+                class="sr-only">
+              <!-- Female Icon -->
+              <svg class="h-6 w-6 mb-2 transition-colors duration-200" 
+                  [class.text-pink-500]="getControl('gender').value === 'female'"
+                  [class.text-gray-500]="getControl('gender').value !== 'female'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-sm font-medium transition-colors duration-200"
+                    [class.text-pink-600]="getControl('gender').value === 'female'"
+                    [class.text-gray-700]="getControl('gender').value !== 'female'">
+                Female
+              </span>
+            </label>
+          </div>
+          
+          <!-- Error Message -->
+          <div *ngIf="getControl('gender').invalid && getControl('gender').touched" class="mt-2">
+            <small *ngIf="getControl('gender').errors?.['required']" class="text-red-600 text-xs sm:text-sm flex items-center">
+              <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              Please select your gender
+            </small>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button 
+            type="submit" 
+            [disabled]="isLoading"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 transition-all duration-200 ease-in-out shadow-md hover:shadow-lg">
+            
+            <span *ngIf="isLoading" class="absolute left-0 inset-y-0 flex items-center pl-3">
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
+            
+            {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+          </button>
+        </div>
+
+
+        
+      </form>
+      
+      <!-- Login Link -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          Already have an account?
+          <a href="#" routerLink="/login" class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

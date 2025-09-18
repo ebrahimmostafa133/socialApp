@@ -1,0 +1,63 @@
+<div class="space-y-3">
+
+  <!-- Loop Comments -->
+  @for (c of comments(); track c._id) {
+    <div class="flex items-start space-x-3">
+      <img 
+        [src]="c.commentCreator.photo.includes('undefined') ? '/images/profile.png' : c.commentCreator.photo"
+        [alt]="c.commentCreator.name"
+        class="w-8 h-8 rounded-full flex-shrink-0 object-cover"
+      />
+      <div class="flex-1 min-w-0">
+        <div class="bg-gray-50 rounded-2xl px-3 py-2">
+          <div class="flex items-center space-x-2 mb-1">
+            <h4 class="font-semibold text-sm text-gray-900">
+              {{ c.commentCreator.name }}
+            </h4>
+            <span class="text-xs text-gray-500">
+              {{ c.createdAt | date:'short' }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            {{ c.content }}
+          </p>
+        </div>
+
+        <!-- Delete button -->
+        <button 
+          (click)="deleteComment(c._id)" 
+          class="ml-2 hidden text-red-600 text-xs hover:underline">
+          🗑 Delete
+        </button>
+      </div>
+    </div>
+  }
+
+
+  <!-- Comment Input -->
+  <div class="flex items-center space-x-3">
+    <img src="/images/profile.png" 
+         alt="Your profile" 
+         class="w-8 h-8 rounded-full flex-shrink-0 object-cover">
+    <div class="flex-1 relative">
+      <input type="text" placeholder="Your comment..."
+             [ngModel]="newComment()"
+             (ngModelChange)="newComment.set($event)"
+             class="w-full bg-gray-50 rounded-full px-4 py-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white border-0 transition-all duration-200">
+      <button (click)="addComment()"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" 
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" 
+                clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <p *ngIf="loading()" class="text-gray-500 text-sm">Loading comments...</p>
+  <p *ngIf="!loading() && comments().length === 0" class="text-gray-500 text-sm">
+    No comments yet. Be the first!
+  </p>
+</div>
