@@ -11,7 +11,11 @@
 @for (post of allPosts(); track post.id) {
       <app-s-post
         [post]="post"
-        [mode]="'hide'"
+        [mode]="'full'"
+
+        (postUpdated)="onPostUpdated($event)"
+        (postDeleted)="onPostDeleted($event)"
+        (refreshRequested)="onRefreshRequested()"
       ></app-s-post>
 }
 
