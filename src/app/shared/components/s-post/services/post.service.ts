@@ -39,4 +39,30 @@ export class PostService {
   deletePost(id: string): Observable<any> {
     return this.httpClient.delete(environment.baseUrl + `posts/${id}`);
   }
+
+  // Method to refresh a single post with full data (including populated user)
+  refreshSinglePost(postId: string): void {
+    this.getSinglePost(postId).subscribe({
+      next: (response) => {
+        let refreshedPost = response;
+        if (response && response.post) {
+          refreshedPost = response.post;
+        } else if (response && response.data) {
+          refreshedPost = response.data;
+        }
+
+        if (refreshedPost) {
+          // Update the post in the allPosts array
+          const currentPosts = this.allPosts();
+          const updatedPosts = currentPosts.map(post => 
+            post._id === postId ? refreshedPost : post
+          );
+          this.allPosts.set(updatedPosts);
+        }
+      },
+      error: (error) => {
+        console.error('Error refreshing post:', error);
+      }
+    });
+  }
 }

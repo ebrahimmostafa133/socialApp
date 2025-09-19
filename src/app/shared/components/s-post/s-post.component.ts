@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SCommentComponent } from '../s-comment/s-comment.component';
 import { PostService } from './services/post.service';
+import { PostEditService } from '../create-post/services/post-edit.service';
 
 @Component({
   selector: 'app-s-post',
@@ -14,6 +15,7 @@ import { PostService } from './services/post.service';
 })
 export class SPostComponent {
   private readonly postService = inject(PostService);
+  private readonly postEditService = inject(PostEditService);
 
   post = input.required<Post>();
   mode = input.required<string>();
@@ -39,6 +41,22 @@ export class SPostComponent {
         this.commentsWritable.set(currentPost.comments);
       }
     });
+
+    // Effect to listen for post updates from edit service
+    effect(() => {
+      const updatedPost = this.postEditService.updatedPost();
+      const currentPost = this.post();
+      
+      if (updatedPost && currentPost && updatedPost._id === currentPost._id) {
+        // Emit the updated post to parent
+        this.postUpdated.emit(updatedPost);
+        // Reset the updated post signal
+        this.postEditService.updatedPost.set(null);
+
+        // Close dropdown after successful update
+        this.openDropdownId.set(null);
+      }
+    });
   }
 
   toggleDropdown(postId: string) {
@@ -52,41 +70,19 @@ export class SPostComponent {
   }
 
   onUpdate(post: Post) {
-    console.log('Update post:', post);
-    
-    // Example update logic - you can modify this based on your needs
-    const updatedData = {
-      body: 'Updated post content', // This should come from a form or modal
-      // Add other fields you want to update
-    };
+    // Set the post to edit signal
+    this.postEditService.postToEdit.set(post);
 
-    this.postService.updatePost(post._id, updatedData).subscribe({
-      next: (response) => {
-        console.log('Post updated successfully', response);
-        
-        // Option 1: Emit the updated post data if API returns it
-        if (response.post) {
-          this.postUpdated.emit(response.post);
-        } else {
-          // Option 2: Just request a refresh if API doesn't return updated data
-          this.refreshRequested.emit();
-        }
-        
-        // Close dropdown after successful update
-        this.openDropdownId.set(null);
-      },
-      error: (error) => {
-        console.error('Error updating post:', error);
-      }
-    });
+    // Trigger modal open
+    this.postEditService.openModal.set(true);
   }
 
   onDelete(post: Post) {
     console.log('Delete post:', post);
     
-    // Optional: Show confirmation dialog
-    const confirmed = confirm('Are you sure you want to delete this post?');
-    if (!confirmed) return;
+    // // Optional: Show confirmation dialog
+    // const confirmed = confirm('Are you sure you want to delete this post?');
+    // if (!confirmed) return;
 
     this.postService.deletePost(post._id).subscribe({
       next: (response) => {
