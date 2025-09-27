@@ -37,6 +37,7 @@ export class RegisterComponent implements OnInit {
           Validators.required,
           Validators.minLength(6),
           Validators.maxLength(20),
+          Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).+$'), 
         ]),
         rePassword: new FormControl('', [Validators.required]), // ✅ Changed from confirmPassword
         dateOfBirth: new FormControl('', [Validators.required]),

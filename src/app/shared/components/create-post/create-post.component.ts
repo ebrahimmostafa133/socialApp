@@ -1,9 +1,11 @@
-import { Component, effect, ElementRef, inject, model, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, effect, ElementRef, EventEmitter, inject, model, OnInit, Output, signal, viewChild, WritableSignal } from '@angular/core';
 import { initFlowbite, Modal } from 'flowbite';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PostService } from '../s-post/services/post.service';
 import { CommonModule } from '@angular/common';
 import { PostEditService } from './services/post-edit.service';
+import { Post } from '../s-post/model/post.interface';
+import { UserService } from '../../../features/auth/services/user.service';
 
 @Component({
   selector: 'app-create-post',
@@ -13,7 +15,10 @@ import { PostEditService } from './services/post-edit.service';
 })
 export class CreatePostComponent implements OnInit {
 
+  @Output() newPostCreated = new EventEmitter<Post>();
+
   private readonly postService = inject(PostService);
+  private readonly userService = inject(UserService); // Add this injection
   allposts = this.postService.allPosts;
   // pagination
   limit: number = 20;   
@@ -101,7 +106,7 @@ export class CreatePostComponent implements OnInit {
     const formData = new FormData();
     if (this.saveFile()) formData.append('image', this.saveFile()!, this.saveFile()!.name);
     formData.append('body', this.content.value);
-
+    
     if (this.postEditService.postToEdit()) {
       // Update existing post
       const originalPost = this.postEditService.postToEdit()!;
@@ -145,10 +150,10 @@ export class CreatePostComponent implements OnInit {
       // Create new post
       this.postService.createPost(formData).subscribe({
         next: (response) => {
-          console.log('Post created', response);
+          console.log('Post created - Full response:', response);
           
           // Handle different response structures
-          let newPost = null;
+          let newPost:any = null;
           
           if (response && response.post) {
             newPost = response.post;
@@ -159,14 +164,54 @@ export class CreatePostComponent implements OnInit {
             newPost = response;
           }
           
+          console.log('Extracted new post:', newPost);
+          
           if (newPost) {
+            // 🔥 CRITICAL: Ensure the post has complete user data
+            const currentUser = this.userService.user();
+            
+            // If the post doesn't have complete user data, add it
+            if (!newPost.user || !newPost.user.name || !newPost.user.photo) {
+              newPost = {
+                ...newPost,
+                user: {
+                  _id: currentUser?._id || newPost.user?._id,
+                  name: currentUser?.name || newPost.user?.name || 'Unknown User',
+                  photo: currentUser?.photo || newPost.user?.photo || '/images/profile.png',
+                  email: currentUser?.email || newPost.user?.email,
+                  ...newPost.user // Keep any existing user data
+                }
+              };
+            }
+
+            // Ensure createdAt exists for proper sorting
+            if (!newPost.createdAt) {
+              newPost.createdAt = new Date().toISOString();
+            }
+
+            console.log('Final new post with user data:', newPost);
+            
             // Add the new post to the beginning of the posts array
             const currentPosts = this.postService.allPosts();
-            this.postService.allPosts.set([newPost, ...currentPosts]);
+            const updatedPosts = [newPost, ...currentPosts].sort(
+              (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+            this.postService.allPosts.set(updatedPosts);
+
+            // 🔥 EMIT the post so ProfileComponent can react immediately
+            console.log('Emitting newPostCreated event with:', newPost);
+            this.newPostCreated.emit(newPost);
+            
+            // 🔥 Optional: Refresh the post from server to ensure we have complete data
+            setTimeout(() => {
+              if (newPost._id) {
+                this.postService.refreshSinglePost(newPost._id);
+              }
+            }, 500);
+            
           } else {
             console.warn('New post data not found in response, reloading posts');
-            // If we can't find the new post in response, reload all posts
-            this.page = 1; // Reset to first page
+            this.page = 1;
             this.loadAllPosts();
           }
           

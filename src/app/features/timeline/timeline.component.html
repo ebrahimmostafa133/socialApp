@@ -1,22 +1,52 @@
-<app-create-post></app-create-post>
+<!-- Enhanced Home Timeline - Replace your existing home.component.html -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+  <!-- Create Post Section -->
+  <div class=" pb-6">
+    <app-create-post></app-create-post>
+  </div>
 
-<!-- posts -->
-<div 
-  class="timeline-container"
-  infiniteScroll
-  [infiniteScrollDistance]="2"
-  [infiniteScrollThrottle]="300"
-  (scrolled)="onScroll()"
->
-@for (post of allPosts(); track post.id) {
-      <app-s-post
-        [post]="post"
-        [mode]="'full'"
+  <!-- Timeline Container -->
+  <div 
+    class="timeline-container max-w-2xl mx-auto px-4 pb-20"
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300"
+    (scrolled)="onScroll()"
+  >
+    <!-- Posts Grid -->
+    <div class="space-y-6">
+      @for (post of allPosts(); track post.id) {
+        <div class="animate-in slide-in-from-bottom-4 duration-500" [style.animation-delay]="$index * 100 + 'ms'">
+          <app-s-post
+            [post]="post"
+            [mode]="'full'"
+            (postUpdated)="onPostUpdated($event)"
+            (postDeleted)="onPostDeleted($event)"
+            (refreshRequested)="onRefreshRequested()"
+          ></app-s-post>
+        </div>
+      }
+    </div>
 
-        (postUpdated)="onPostUpdated($event)"
-        (postDeleted)="onPostDeleted($event)"
-        (refreshRequested)="onRefreshRequested()"
-      ></app-s-post>
-}
+    <!-- End of feed indicator -->
+    @if (allPosts().length > 0 && !hasMorePosts) {
+      <div class="text-center py-12">
+        <div class="inline-flex items-center space-x-2 text-gray-400">
+          <div class="w-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          <span class="text-sm font-medium">You're all caught up!</span>
+          <div class="w-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        </div>
+      </div>
+    }
+  </div>
 
+  <!-- Floating Action Button (Mobile) -->
+  <button 
+    class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 z-50 md:hidden"
+    data-modal-target="authentication-modal"
+    data-modal-toggle="authentication-modal">
+    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+  </button>
 </div>

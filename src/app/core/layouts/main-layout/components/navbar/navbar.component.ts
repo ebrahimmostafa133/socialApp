@@ -13,10 +13,14 @@ export class NavbarComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
   user = computed(() => this.userService.user());
+  
   ngOnInit(): void {
     initFlowbite();
-    this.userService.getLoggedUserData().subscribe();
     
+    // 🔥 Only load user data if not already present
+    if (!this.userService.user()) {
+      this.userService.getLoggedUserData().subscribe();
+    }
   }
 
   logout():void{

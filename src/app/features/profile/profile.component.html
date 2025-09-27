@@ -1,1 +1,64 @@
-<p>profile works!</p>
+<div class="max-w-3xl mx-auto my-8 px-4">
+  <!-- Profile Header -->
+  <section class="bg-white shadow-md rounded-xl p-6 flex items-center gap-6">
+    <!-- Avatar -->
+    <div class="relative">
+      <img
+        [src]="getCurrentProfilePhoto()"
+        alt="Profile"
+        class="w-24 h-24 rounded-full object-cover border"
+      />
+      <!-- Upload button -->
+      <label
+        for="profile-photo"
+        class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 4v16m8-8H4" />
+        </svg>
+        <input
+          id="profile-photo"
+          type="file"
+          class="hidden"
+          accept="image/*"
+          (change)="onProfilePhotoChange($event)"
+        />
+      </label>
+    </div>
+
+    <!-- User Info -->
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800">
+        {{ userService.user()?.name || 'User Name' }}
+      </h2>
+      <p class="text-gray-600">{{ userService.user()?.email }}</p>
+    </div>
+  </section>
+
+  <!-- Create Post -->
+  <section class="mt-6 ">
+    <app-create-post (newPostCreated)="addNewPost($event)"></app-create-post>
+  </section>
+
+  <!-- User Posts -->
+  <section class="mt-6 space-y-4">
+    <h3 class="text-xl font-semibold text-gray-800 border-b pb-2">My Posts</h3>
+    @for (post of allPosts(); track post._id) {
+      <app-s-post
+        [post]="post"
+        [mode]="'full'"
+        (postUpdated)="onPostUpdated($event)"
+        (postDeleted)="onPostDeleted($event)"
+      ></app-s-post>
+    }
+    
+    <!-- Loading state or empty state -->
+    @if (allPosts().length === 0) {
+      <div class="text-center py-8 text-gray-500">
+        <p>No posts yet. Create your first post!</p>
+      </div>
+    }
+  </section>
+</div>

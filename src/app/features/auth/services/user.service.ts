@@ -38,5 +38,29 @@ export class UserService {
       })
     );
   }
+
+  // Add this method to your UserService class
+
+  /**
+   * Force update user signal to trigger reactivity across all components
+   */
+  forceUserUpdate(): void {
+    const currentUser = this.user();
+    if (currentUser) {
+      // Create a new reference to trigger signal updates
+      this.user.set({ ...currentUser });
+    }
+  }
+
+  /**
+   * Update user photo and trigger reactivity
+   */
+  updateUserPhoto(photoUrl: string): void {
+    this.user.update(user => 
+      user ? { ...user, photo: photoUrl } : user
+    );
+    // Force update to ensure all components react
+    this.forceUserUpdate();
+  }
   
 }

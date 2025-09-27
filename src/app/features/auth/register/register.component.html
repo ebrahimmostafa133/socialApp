@@ -93,6 +93,7 @@
             <small *ngIf="getControl('password').errors?.['required']" class="text-red-600 text-xs">Password is required</small>
             <small *ngIf="getControl('password').errors?.['minlength']" class="text-red-600 text-xs">Password must be at least 6 characters</small>
             <small *ngIf="getControl('password').errors?.['maxlength']" class="text-red-600 text-xs">Password must not exceed 20 characters</small>
+            <small *ngIf="getControl('password').errors?.['pattern']" class="text-red-600 text-xs">Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character</small>
           </div>
         </div>
 

@@ -42,8 +42,10 @@ export class PostService {
 
   // Method to refresh a single post with full data (including populated user)
   refreshSinglePost(postId: string): void {
+    console.log('Refreshing single post:', postId);
     this.getSinglePost(postId).subscribe({
       next: (response) => {
+        console.log('Refreshed post response:', response);
         let refreshedPost = response;
         if (response && response.post) {
           refreshedPost = response.post;
@@ -51,7 +53,8 @@ export class PostService {
           refreshedPost = response.data;
         }
 
-        if (refreshedPost) {
+        if (refreshedPost && refreshedPost._id) {
+          console.log('Updating post in allPosts array:', refreshedPost);
           // Update the post in the allPosts array
           const currentPosts = this.allPosts();
           const updatedPosts = currentPosts.map(post => 
@@ -64,5 +67,33 @@ export class PostService {
         console.error('Error refreshing post:', error);
       }
     });
+  }
+
+  // 🔥 Method to add a new post to the beginning of the array
+  addNewPostToFeed(newPost: Post): void {
+    const currentPosts = this.allPosts();
+    
+    // Check if post already exists to avoid duplicates
+    const existingPostIndex = currentPosts.findIndex(p => p._id === newPost._id);
+    
+    if (existingPostIndex >= 0) {
+      // Update existing post
+      const updatedPosts = [...currentPosts];
+      updatedPosts[existingPostIndex] = newPost;
+      this.allPosts.set(updatedPosts.sort(
+        (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ));
+    } else {
+      // Add new post to beginning
+      const updatedPosts = [newPost, ...currentPosts].sort(
+        (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      this.allPosts.set(updatedPosts);
+    }
+  }
+
+  // 🔥 Method to get posts for a specific user (for profile filtering)
+  getUserPostsFromFeed(userId: string): Post[] {
+    return this.allPosts().filter(post => post.user?._id === userId);
   }
 }
